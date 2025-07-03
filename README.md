@@ -1,8 +1,8 @@
 ![Meta-estimate plot](plots/meta-estimate.png)
 
-# Meta-Estimate of Russian Casualties & Deaths
+# Meta-estimates of dead and wounded in the Russia-Ukraine war (2022-)
 
-A concise R script that aggregates public estimates of military casualties and deaths in the Russia–Ukraine war, fits a GAM (using **mgcv**), and outputs both data and a combined plot.
+A R script aggregates a public and leaked intelligence estimates of military casualties and deaths in the Russia–Ukraine war, fits a GAM (using **mgcv**), and outputs both data and a combined plot of predicted casualties and dead. It currently only predicts dead and casualties for the Russian side, as there are not enough credible public estimates of Ukrainian fallen to produce meta-estimates.
 
 ## Prerequisites
 - **R** ≥ 4.0  
