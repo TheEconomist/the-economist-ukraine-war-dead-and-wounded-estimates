@@ -3,7 +3,6 @@
 # 1. Load packages ------------------------------------------------------------
 library(tidyverse)
 library(lubridate)
-library(agtboost)
 
 # 2. Load source data ------------------------------------------------------------
 all <- read_csv('source-data/Soldier deaths_casualties in Ukraine June 1st 2025 - estimates.csv') %>% 
@@ -254,14 +253,25 @@ generate_gam_prediction <- function(estimate_df = casualties_cumulative,
     geom_point(data=estimate_df, aes(x=date, y=estimate))
   print(p)
   
-  # Ensure all monotonically increasing
+  # Smooth to lowest level of the estimates (7-day), ensure monotonically increasing
   predictions <- predictions %>% arrange(date)
   if(sum(duplicated(predictions$date))> 0){
     stop('Duplicated dates!')
   }
+  
+  
+  
+  # Set a rolling average for the specified columns with dynamic window size
+  library(zoo)
+  for(i in c('fit', 'ci_lower', 'ci_upper', 'pi_low', 'pi_high')) {
+    predictions[, i] <- rollapply(predictions[, i], width = 7, FUN = function(x) mean(x, na.rm = T), fill = NA, align = 'right', partial = TRUE)
+  }
+  
+  # Ensure all monotonically increasing
   for(i in c('fit', 'ci_lower', 'ci_upper', 'pi_low', 'pi_high')){
     predictions[, i] <- cummax(predictions[, i])
   }
+  
   
   p <- ggplot(predictions, aes(x = date)) +
     geom_ribbon(aes(ymin = pi_low, ymax = pi_high), alpha = 0.2) +
@@ -292,8 +302,8 @@ gam_deaths <- generate_gam_prediction(estimate_df = deaths_cumulative, gtitle='D
          country = 'russia')
 
 # Export data
-write_csv(gam_casualties, 'output-data/meta-estimate-casualties.csv')
-write_csv(gam_deaths, 'output-data/meta-estimate-deaths.csv')
+write_csv(gam_casualties %>% arrange(desc(date)), 'output-data/meta-estimate-casualties.csv')
+write_csv(gam_deaths %>% arrange(desc(date)), 'output-data/meta-estimate-deaths.csv')
 
 # Export chart
 library(scales)
