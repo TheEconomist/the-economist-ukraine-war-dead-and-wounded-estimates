@@ -5,14 +5,14 @@ library(tidyverse)
 library(lubridate)
 
 # 2. Load source data ------------------------------------------------------------
-all <- read_csv('source-data/Soldier deaths_casualties in Ukraine June 1st 2025 - estimates.csv') %>% 
+all <- read_csv('source-data/Soldier deaths_casualties in Ukraine - estimates.csv') %>% 
   filter(is.na(`ignore for chart, data from warring parties`)) %>%
   mutate(date = as.Date(date, format = '%d/%m/%Y'),
          source = ifelse(source == 'UK Ministry of Defence', 'UK MoD', source)) %>%
   mutate(source = ifelse(source == 'Pentagon leak', 'US DoD', source))
 all$source_id <- paste0('all_df_', all$source, '_', seq_len(nrow(all)))
 
-casualties_via_mod <- read_csv('source-data/Soldier deaths_casualties in Ukraine June 1st 2025 - uk mod month-by-month estimates.csv') %>% 
+casualties_via_mod <- read_csv('source-data/Soldier deaths_casualties in Ukraine - uk mod month-by-month estimates.csv') %>% 
   mutate(date = as.Date(as.character(`date (at beginning of next month)`), format = '%d/%m/%Y')) %>%
   filter(date <= as.Date('2025-05-01')) %>%
   mutate(estimate_low = NA,
@@ -194,6 +194,7 @@ generate_gam_prediction <- function(estimate_df = casualties_cumulative,
                                       
                                       # change in territory over time
                                       s(total_change_in_area_assessed_as_russia_controlled, k = 3)){
+  
   library(mgcv)
   gam_model <- gam(
     formula = gam_formula,
@@ -331,5 +332,49 @@ ggplot(gam_casualties, aes(x = date)) +
   )+
   scale_y_continuous(labels = label_comma())
 ggsave('plots/meta-estimate.png', width = 12, height = 8)
-  
 
+# Number of estimates used:
+
+library(dplyr)
+library(tidyr)
+library(readr)
+
+# Add a column to identify the source of the data (deaths or casualties)
+deaths_cumulative <- deaths_cumulative %>%
+  mutate(source_type = "deaths")
+casualties_cumulative <- casualties_cumulative %>%
+  mutate(source_type = "casualties")
+
+# Combine the data, filter out NAs in 'estimate', and select 'source' and 'source_type'
+combined_data <- rbind(deaths_cumulative, casualties_cumulative) %>%
+  filter(!is.na(estimate)) %>%
+  select(source, source_type, weight)
+
+# Create a table counting the occurrences for each source
+source_count <- combined_data %>%
+  group_by(source, source_type) %>%
+  summarise(count = sum(weight)) %>%
+  spread(key = source_type, value = count, fill = 0)
+
+# Create the overall count for each source
+overall_count <- combined_data %>%
+  group_by(source) %>%
+  summarise(Overall = sum(weight))
+
+# Merge overall count with deaths and casualties counts
+final_table <- source_count %>%
+  left_join(overall_count, by = "source")
+
+# Add a final row with the sum across all sources
+final_row <- tibble(
+    source = "Total",
+    deaths = sum(final_table$deaths, na.rm = TRUE),
+    casualties = sum(final_table$casualties, na.rm = TRUE),
+    Overall = sum(final_table$Overall, na.rm = TRUE)
+  )
+
+# Combine the final table with the summary row
+final_table_with_total <- bind_rows(final_table, final_row)
+
+# Write the final table with the total row to CSV
+write_csv(final_table_with_total, "output-data/sources_summary.csv")
