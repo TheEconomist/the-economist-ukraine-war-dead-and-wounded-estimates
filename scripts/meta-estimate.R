@@ -156,7 +156,7 @@ covars_cumulative <- covars %>%
   )
 
 # Ensure we have all dates since the war began:
-war <- tibble(date = as.Date(invasion_start:Sys.Date())) %>%
+war <- tibble(date = seq.Date(from = invasion_start, to = Sys.Date(), by = "day")) %>%
   mutate(days_since_invasion = as.numeric(date - min(date)))
 covars <- covars %>% full_join(war, by = "date") %>% filter(date >= invasion_start)
 covars_cumulative <- covars_cumulative %>% full_join(war, by = "date") %>% filter(date >= invasion_start)
@@ -218,7 +218,7 @@ generate_gam_prediction <- function(estimate_df = casualties_cumulative,
   )
   
   # convert link-scale fits to response-scale means
-  predictions <- tibble(date = as.Date(invasion_start:Sys.Date())) %>%
+  predictions <- tibble(date = seq.Date(from = invasion_start, to = Sys.Date(), by = "day")) %>%
     mutate(days_since_invasion = as.numeric(date - min(date))) %>% 
     mutate(
       fit_link = casualty_preds$fit,
