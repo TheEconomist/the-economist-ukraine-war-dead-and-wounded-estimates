@@ -1,0 +1,58 @@
+name: Update deaths-and-casualties source data
+
+# Allow read access across org repos and write to this repo
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    container:
+      image: rocker/verse:4.2.0
+      options: --quiet
+
+    steps:
+      - name: Checkout self
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Checkout war-fire-model
+        uses: actions/checkout@v4
+        with:
+          repository: TheEconomist/the-economist-war-fire-model
+          path: war-fire-model
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Checkout ukraine-war-data
+        uses: actions/checkout@v4
+        with:
+          repository: TheEconomist/ukraine-war-data
+          path: ukraine-war-data
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Copy updated CSVs
+        run: |
+          cp war-fire-model/output-data/strikes_by_location_and_day.csv \
+             source-data/deaths-and-casualties-data/
+          cp ukraine-war-data/output-data/tracker/area_assessed_as_controlled_by_russia.csv \
+             source-data/deaths-and-casualties-data/
+
+      - name: Run meta-estimate.R
+        run: |
+          Rscript scripts/meta-estimate.R
+
+      - name: Commit and push changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: 'Update deaths-and-casualties data & run meta-estimate.R'
+          add: |
+            source-data/deaths-and-casualties-data/*.csv
+            output-data/**
