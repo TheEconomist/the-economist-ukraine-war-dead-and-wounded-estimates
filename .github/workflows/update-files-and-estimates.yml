@@ -26,14 +26,14 @@ jobs:
         with:
           repository: TheEconomist/the-economist-war-fire-model
           path: war-fire-model
-          token: ${{ secrets.PAT_TOKEN }}  # set PAT_TOKEN in repo secrets with read access to org repos
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Checkout ukraine-war-data
         uses: actions/checkout@v4
         with:
           repository: TheEconomist/ukraine-war-data
           path: ukraine-war-data
-          token: ${{ secrets.PAT_TOKEN }}  # set PAT_TOKEN in repo secrets
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Copy updated CSVs
         run: |
@@ -50,7 +50,10 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libmagick++-dev libcurl4-openssl-dev libxml2-dev libssl-dev libfontconfig1-dev libfreetype6-dev libpng-dev libicu-dev
+          sudo apt-get install -y \
+            libmagick++-dev libcurl4-openssl-dev libxml2-dev libssl-dev \
+            libfontconfig1-dev libfreetype6-dev libpng-dev libicu-dev \
+            libblas-dev liblapack-dev libatlas-base-dev r-base-dev build-essential
 
       - name: Cache R packages
         uses: actions/cache@v3
@@ -64,9 +67,10 @@ jobs:
         env:
           R_LIBS_USER: ${{ env.R_LIBS_USER }}
         run: |
-          Rscript -e 'install.packages(c(
-            "tidyverse","zoo","mgcv","scale","dplyr","tidyr","readr","httr","ragg","rvest","googledrive","googlesheets4"
-          ), repos="https://cloud.r-project.org", dependencies=TRUE)'
+          Rscript -e 'install.packages(
+            c("dplyr","tidyr","readr","zoo","mgcv","scale","lubridate","ggplot2","scales",
+              "httr","ragg","rvest","googledrive","googlesheets4"), repos="https://cloud.r-project.org", dependencies=TRUE
+          )'
 
       - name: Run meta-estimate.R
         run: |
