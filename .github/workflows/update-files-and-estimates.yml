@@ -1,5 +1,11 @@
 name: Update deaths-and-casualties source data
 
+# Allow read access across org repos and write to this repo
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
+
 on:
   workflow_dispatch:
   schedule:
@@ -20,14 +26,14 @@ jobs:
         with:
           repository: TheEconomist/the-economist-war-fire-model
           path: war-fire-model
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}  # set PAT_TOKEN in repo secrets
 
       - name: Checkout ukraine-war-data
         uses: actions/checkout@v4
         with:
           repository: TheEconomist/ukraine-war-data
           path: ukraine-war-data
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}  # set PAT_TOKEN in repo secrets
 
       - name: Copy updated CSVs
         run: |
@@ -43,13 +49,11 @@ jobs:
 
       - name: Cache R packages
         uses: actions/cache@v3
-        env:
-          cache-name: cache-r-packages
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-r-${{ matrix.r-version }}-${{ hashFiles('scripts/meta-estimate.R') }}
+          key: ${{ runner.os }}-r-4.2-${{ hashFiles('scripts/meta-estimate.R') }}
           restore-keys: |
-            ${{ runner.os }}-r-${{ matrix.r-version }}-
+            ${{ runner.os }}-r-4.2-
 
       - name: Install R package dependencies
         env:
