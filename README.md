@@ -1,6 +1,13 @@
 # Meta-estimates of dead and wounded in the Russia-Ukraine war (2022-)
 
 <!-- ESTIMATES-START -->
+
+## Live estimates
+
+As of **2025-07-07**:
+- Estimated deaths: **223,000** to **309,000** (or, roughly **262,000**)
+- Estimated casualties: **894,000** to **1,254,000** (or, roughly **1,059,000**)
+
 <!-- ESTIMATES-END -->
 
 ![Meta-estimate plot](plots/meta-estimate.png)
