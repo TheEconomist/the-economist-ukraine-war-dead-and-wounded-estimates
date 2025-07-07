@@ -1,0 +1,31 @@
+name: Sync estimates into README
+
+on:
+  push:
+    paths:
+      - 'output-data/tracker/meta-estimate-*.csv'
+  schedule:
+    - cron: '30 */6 * * *'  # every day at 01:00 UTC
+  workflow_dispatch:        # ← manual trigger via GitHub UI
+
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: pip install pandas
+      - name: Update README from CSV
+        run: |
+          chmod +x update-readme.py
+          ./update-readme.py
+      - name: Commit & push changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore: update live estimates from CSV"
+          file_pattern: "README.md"
