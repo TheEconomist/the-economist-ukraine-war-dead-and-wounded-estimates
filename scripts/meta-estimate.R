@@ -1,8 +1,12 @@
 # This scripts reads in estimates of casualties and dead in the Russia-Ukraine war and uses them to construct a meta-estimate of those fallen in the conflict. There is currently not enough data on Ukrainian casualties or deaths to produce a live-updating estimate.
 
 # 1. Load packages ------------------------------------------------------------
-library(tidyverse)
 library(lubridate)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(scales)
 
 # 2. Load source data ------------------------------------------------------------
 all <- read_csv('source-data/deaths-and-casualties-data/Soldier deaths_casualties in Ukraine - estimates.csv') %>% 
@@ -334,10 +338,6 @@ ggplot(gam_casualties, aes(x = date)) +
 ggsave('plots/meta-estimate.png', width = 12, height = 8)
 
 # Number of estimates used:
-
-library(dplyr)
-library(tidyr)
-library(readr)
 
 # Add a column to identify the source of the data (deaths or casualties)
 deaths_cumulative <- deaths_cumulative %>%
