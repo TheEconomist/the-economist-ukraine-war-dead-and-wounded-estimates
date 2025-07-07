@@ -4,9 +4,11 @@
 
 A R script aggregates a public and leaked intelligence estimates of military casualties and deaths in the Russia–Ukraine war, fits a GAM (using **mgcv**), and outputs both data and a combined plot of predicted casualties and dead. It currently only predicts dead and casualties for the Russian side, as there are not enough credible public estimates of Ukrainian fallen to produce meta-estimates.
 
+NOTE: Meta-estimates do not live-update in this repo, but instead in "Ukraine-war-data".
+
 ## Prerequisites
 - **R** ≥ 4.0  
-- R packages: `tidyverse`, `lubridate`, `mgcv`, `scales`
+- R packages: `tidyverse`, `lubridate`, `mgcv`, `scales`, `zoo` 
 
 ## Data Layout
 ```

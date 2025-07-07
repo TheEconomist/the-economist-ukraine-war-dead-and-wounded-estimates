@@ -5,14 +5,14 @@ library(tidyverse)
 library(lubridate)
 
 # 2. Load source data ------------------------------------------------------------
-all <- read_csv('source-data/Soldier deaths_casualties in Ukraine - estimates.csv') %>% 
+all <- read_csv('source-data/deaths-and-casualties-data/Soldier deaths_casualties in Ukraine - estimates.csv') %>% 
   filter(is.na(`ignore for chart, data from warring parties`)) %>%
   mutate(date = as.Date(date, format = '%d/%m/%Y'),
          source = ifelse(source == 'UK Ministry of Defence', 'UK MoD', source)) %>%
   mutate(source = ifelse(source == 'Pentagon leak', 'US DoD', source))
 all$source_id <- paste0('all_df_', all$source, '_', seq_len(nrow(all)))
 
-casualties_via_mod <- read_csv('source-data/Soldier deaths_casualties in Ukraine - uk mod month-by-month estimates.csv') %>% 
+casualties_via_mod <- read_csv('source-data/deaths-and-casualties-data/Soldier deaths_casualties in Ukraine - uk mod month-by-month estimates.csv') %>% 
   mutate(date = as.Date(as.character(`date (at beginning of next month)`), format = '%d/%m/%Y')) %>%
   filter(date <= as.Date('2025-05-01')) %>%
   mutate(estimate_low = NA,
@@ -32,7 +32,7 @@ if (max(casualties_via_mod$date, na.rm = TRUE) < Sys.Date() - 30*3 &&
 }
 
 # Source: https://meduza.io/en/feature/2024/07/05/a-new-estimate-from-meduza-and-mediazona-shows-the-rate-of-russian-military-deaths-in-ukraine-is-only-growing N
-deaths_via_meduza <- read_csv('source-data/meduza_2024.csv') %>%
+deaths_via_meduza <- read_csv('source-data/deaths-and-casualties-data/meduza_2024.csv') %>%
   # This chunk ensures that format stays consistent
   rename(date = Date,
          "Estimate based on probate data" = `Оценка на основе данных РНД`,
@@ -42,7 +42,7 @@ deaths_via_meduza <- read_csv('source-data/meduza_2024.csv') %>%
          estimate_low = ifelse(!is.na(ED_low), 
                                ED_low, ED_onlyprediction_low),
          estimate_high = ifelse(!is.na(ED_high), 
-                               ED_high, ED_onlyprediction_high),
+                                ED_high, ED_onlyprediction_high),
          country = 'russia') %>%
   arrange(date) %>%
   mutate(date = if_else(date == as.Date('2022-02-21'), invasion_start, date)) # Fix for invasion starting mid-week
@@ -51,7 +51,7 @@ deaths_via_meduza$source_id <- paste0('deaths_via_meduza_', seq_len(nrow(deaths_
 deaths_via_meduza$source <- 'Meduza'
 
 # We add on estimated deaths since: 
-deaths_via_meduza_weekly <- read_csv('source-data/meduza_2025_weekly.csv') %>% 
+deaths_via_meduza_weekly <- read_csv('source-data/deaths-and-casualties-data/meduza_2025_weekly.csv') %>% 
   rename(date = Date) %>%
   filter(date <= as.Date('2024-11-18')) %>% # Removes some estimates marked as affected by reporting lags
   mutate(estimate = ifelse(!is.na(`Estimate based on probate data`), 
@@ -102,7 +102,7 @@ casualties_cumulative <- casualties_cumulative %>%
 # Merge in UK MoD data
 casualties_cumulative <- rbind(casualties_cumulative %>% 
                                  select(-type, -`ignore for chart, data from warring parties`),
-                                casualties_via_mod[, colnames(casualties_via_mod) %in% colnames(casualties_cumulative)]) 
+                               casualties_via_mod[, colnames(casualties_via_mod) %in% colnames(casualties_cumulative)]) 
 # Drop the "Mediazona; Meduza" data already in the main dataset
 deaths_cumulative <- deaths_cumulative %>%
   filter(!source %in% c('Mediazona; Meduza'))
@@ -125,8 +125,8 @@ deaths_cumulative <- deaths_cumulative %>%
                values_to = 'estimate')
 
 # 4. Load covariates and merge these in ---------------------------------------
-fires   <- read_csv('source-data/strikes_by_location_and_day.csv')
-control <- read_csv('source-data/area_assessed_as_controlled_by_russia.csv')
+fires   <- read_csv('source-data/deaths-and-casualties-data/strikes_by_location_and_day.csv')
+control <- read_csv('source-data/deaths-and-casualties-data/area_assessed_as_controlled_by_russia.csv')
 
 covars <- fires %>% left_join(control) %>% mutate(days_since_invasion = as.numeric(date) - as.numeric(invasion_start)) %>% filter(date >= invasion_start)
 
@@ -140,7 +140,7 @@ covars_cumulative <- covars %>%
     total_daily_log_war_fires_to_date_in_russia_held_area = cumsum(ifelse(is.na(war_fires_per_day_in_russia_held_area), 0, ifelse(war_fires_per_day_in_russia_held_area > 0, log(war_fires_per_day_in_russia_held_area), 0))),
     total_cloud_cover_in_east_of_country_to_date = cumsum(ifelse(is.na(cloud_cover_in_country), 0, cloud_cover_in_country)),
     total_change_in_area_assessed_as_russia_controlled = cumsum(abs(change_in_area_assessed_as_russia_controlled))) %>%
-    
+  
   # Select applicable covariates
   select(
     date,
@@ -289,7 +289,7 @@ generate_gam_prediction <- function(estimate_df = casualties_cumulative,
   print(p)
   
   predictions <- predictions %>% rename(estimate = fit) %>% select(-fit_link, -se_link)
-
+  
   return(predictions)}
 
 # Casualties:
@@ -303,8 +303,8 @@ gam_deaths <- generate_gam_prediction(estimate_df = deaths_cumulative, gtitle='D
          country = 'russia')
 
 # Export data
-write_csv(gam_casualties %>% arrange(desc(date)), 'output-data/meta-estimate-casualties.csv')
-write_csv(gam_deaths %>% arrange(desc(date)), 'output-data/meta-estimate-deaths.csv')
+write_csv(gam_casualties %>% arrange(desc(date)), 'output-data/tracker/meta-estimate-casualties.csv')
+write_csv(gam_deaths %>% arrange(desc(date)), 'output-data/tracker/meta-estimate-deaths.csv')
 
 # Export chart
 library(scales)
@@ -320,11 +320,11 @@ ggplot(gam_casualties, aes(x = date)) +
   geom_point(data=deaths_cumulative, aes(x=date, y=estimate), color='darkblue', alpha = 0.5) + 
   
   labs(
-  title = paste0("Predicted Russian casualties and deaths: mean ±95% CI (darker) and 95% PI (lighter)"),
-  subtitle = 'Dots = data. Dark blue = deaths, light blue = casualties. Narrow band is confidence interval, wide is prediction interval',
-  y     = "",
-  x     = ""
-) +
+    title = paste0("Predicted Russian casualties and deaths: mean ±95% CI (darker) and 95% PI (lighter)"),
+    subtitle = 'Dots = data. Dark blue = deaths, light blue = casualties. Narrow band is confidence interval, wide is prediction interval',
+    y     = "",
+    x     = ""
+  ) +
   theme_minimal() +
   theme(
     panel.background = element_rect(fill = "white"),  # White background for the plot panel
@@ -367,14 +367,14 @@ final_table <- source_count %>%
 
 # Add a final row with the sum across all sources
 final_row <- tibble(
-    source = "Total",
-    deaths = sum(final_table$deaths, na.rm = TRUE),
-    casualties = sum(final_table$casualties, na.rm = TRUE),
-    Overall = sum(final_table$Overall, na.rm = TRUE)
-  )
+  source = "Total",
+  deaths = sum(final_table$deaths, na.rm = TRUE),
+  casualties = sum(final_table$casualties, na.rm = TRUE),
+  Overall = sum(final_table$Overall, na.rm = TRUE)
+)
 
 # Combine the final table with the summary row
 final_table_with_total <- bind_rows(final_table, final_row)
 
 # Write the final table with the total row to CSV
-write_csv(final_table_with_total, "output-data/sources_summary.csv")
+write_csv(final_table_with_total, "output-data/tracker/meta_estimate_sources_summary.csv")
