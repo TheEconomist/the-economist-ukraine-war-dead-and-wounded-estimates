@@ -50,15 +50,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libmagick++-dev libcurl4-openssl-dev libxml2-dev
-
-      - name: Install missing R packages
-        env:
-          R_LIBS_USER: ${{ env.R_LIBS_USER }}
-        run: |
-          Rscript -e 'install.packages(c(
-            "httr","ragg","rvest","googledrive","googlesheets4"
-          ), repos="https://cloud.r-project.org")'
+          sudo apt-get install -y libmagick++-dev libcurl4-openssl-dev libxml2-dev libssl-dev libfontconfig1-dev libfreetype6-dev libpng-dev libicu-dev
 
       - name: Cache R packages
         uses: actions/cache@v3
@@ -73,8 +65,8 @@ jobs:
           R_LIBS_USER: ${{ env.R_LIBS_USER }}
         run: |
           Rscript -e 'install.packages(c(
-            "tidyverse","zoo","mgcv","scale","dplyr","tidyr","readr"
-          ), repos="https://cloud.r-project.org")'
+            "tidyverse","zoo","mgcv","scale","dplyr","tidyr","readr","httr","ragg","rvest","googledrive","googlesheets4"
+          ), repos="https://cloud.r-project.org", dependencies=TRUE)'
 
       - name: Run meta-estimate.R
         run: |
