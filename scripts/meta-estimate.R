@@ -337,18 +337,24 @@ ggplot(gam_casualties, aes(x = date)) +
   scale_y_continuous(labels = label_comma())
 ggsave('plots/meta-estimate.png', width = 12, height = 8)
 
-# Number of estimates used:
-
 # Add a column to identify the source of the data (deaths or casualties)
 deaths_cumulative <- deaths_cumulative %>%
   mutate(source_type = "deaths")
 casualties_cumulative <- casualties_cumulative %>%
   mutate(source_type = "casualties")
 
+# Export raw estimates
+raw_data <- rbind(deaths_cumulative, casualties_cumulative) %>%
+  filter(!is.na(estimate))
+write_csv(raw_data, 'output-data/tracker/raw_estimates.csv')
+
+# Number of estimates used:
+
 # Combine the data, filter out NAs in 'estimate', and select 'source' and 'source_type'
 combined_data <- rbind(deaths_cumulative, casualties_cumulative) %>%
   filter(!is.na(estimate)) %>%
   select(source, source_type, weight)
+
 
 # Create a table counting the occurrences for each source
 source_count <- combined_data %>%
