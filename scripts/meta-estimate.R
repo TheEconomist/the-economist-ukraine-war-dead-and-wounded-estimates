@@ -143,7 +143,7 @@ covars_cumulative <- covars %>%
     total_daily_log_war_fires_to_date_in_ukraine_held_area = cumsum(ifelse(is.na(war_fires_per_day_in_ukraine_held_area), 0, ifelse(war_fires_per_day_in_ukraine_held_area > 0, log(war_fires_per_day_in_ukraine_held_area), 0))),
     total_daily_log_war_fires_to_date_in_russia_held_area = cumsum(ifelse(is.na(war_fires_per_day_in_russia_held_area), 0, ifelse(war_fires_per_day_in_russia_held_area > 0, log(war_fires_per_day_in_russia_held_area), 0))),
     total_cloud_cover_in_east_of_country_to_date = cumsum(ifelse(is.na(cloud_cover_in_country), 0, cloud_cover_in_country)),
-    total_change_in_area_assessed_as_russia_controlled = cumsum(abs(change_in_area_assessed_as_russia_controlled))) %>%
+    total_change_in_area_assessed_as_russia_controlled = cumsum(abs(ifelse(is.na(change_in_area_assessed_as_russia_controlled), 0, change_in_area_assessed_as_russia_controlled)))) %>%
   
   # Select applicable covariates
   select(
