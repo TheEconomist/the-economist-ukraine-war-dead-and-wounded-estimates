@@ -190,14 +190,14 @@ generate_gam_prediction <- function(estimate_df = casualties_cumulative,
                                       
                                       # war-fires and visibility
                                       te(total_daily_log_war_fires_to_date,          
-                                         total_cloud_cover_in_east_of_country_to_date, k = c(3, 3)) +
+                                         total_cloud_cover_in_east_of_country_to_date, k = c(4, 4)) +
                                       te(total_daily_log_war_fires_to_date_in_ukraine_held_area,          
-                                         total_cloud_cover_in_east_of_country_to_date, k = c(3, 3)) +
+                                         total_cloud_cover_in_east_of_country_to_date, k = c(4, 4)) +
                                       te(total_daily_log_war_fires_to_date_in_russia_held_area,          
-                                         total_cloud_cover_in_east_of_country_to_date, k = c(3, 3)) +
+                                         total_cloud_cover_in_east_of_country_to_date, k = c(4, 4)) +
                                       
                                       # change in territory over time
-                                      s(total_change_in_area_assessed_as_russia_controlled, k = 3)){
+                                      s(total_change_in_area_assessed_as_russia_controlled, k = 5)){
   
   library(mgcv)
   gam_model <- gam(
