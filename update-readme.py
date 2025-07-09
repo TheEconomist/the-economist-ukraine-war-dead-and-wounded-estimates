@@ -21,12 +21,12 @@ c = casual.loc[casual.date.idxmax()]
 
 # Format values
 date_str = d.date.strftime("%Y-%m-%d")
-d_lo  = round_k(d.pi_lower)
-d_hi  = round_k(d.pi_upper)
+d_lo  = round_k(d.pi_low)
+d_hi  = round_k(d.pi_high)
 d_est = round_k(d.estimate)
 
-c_lo  = round_k(c.pi_lower)
-c_hi  = round_k(c.pi_upper)
+c_lo  = round_k(c.pi_low)
+c_hi  = round_k(c.pi_high)
 c_est = round_k(c.estimate)
 
 # Build the snippet
