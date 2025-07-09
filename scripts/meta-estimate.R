@@ -321,7 +321,7 @@ for(i in c("estimate", "ci_lower", "ci_upper", "pi_low", "pi_high")){
   if(abs(min(gam_casualties[, i], na.rm = T) - min(sq_casualties[, i], na.rm = T)) > 10000){
     stop(paste('Problem for casualties data: unexpectedly large change in start of ', i, '-- please inspect'))
   }
-  if(abs(min(gam_deaths[, i], na.rm = T) 0 min(sq_deaths[, i], na.rm = T)) > 5000){
+  if(abs(min(gam_deaths[, i], na.rm = T) - min(sq_deaths[, i], na.rm = T)) > 5000){
     stop(paste('Problem for deaths data: unexpectedly large change in start of', i, '-- please inspect'))
   }
 }
@@ -404,3 +404,4 @@ final_table_with_total <- bind_rows(final_table, final_row)
 
 # Write the final table with the total row to CSV
 write_csv(final_table_with_total, "output-data/tracker/meta_estimate_sources_summary.csv")
+
