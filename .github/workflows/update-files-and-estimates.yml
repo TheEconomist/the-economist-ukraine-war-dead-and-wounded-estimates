@@ -32,14 +32,22 @@ jobs:
           repository: TheEconomist/the-economist-war-fire-model
           path: war-fire-model
           token: ${{ secrets.PAT_TOKEN }}
-
+          fetch-depth: 1                           # only latest commit :contentReference[oaicite:0]{index=0}
+          sparse-checkout: |
+            output-data/strikes_by_location_and_day.csv
+          sparse-checkout-cone-mode: true
+      
       - name: Checkout ukraine-war-data
         uses: actions/checkout@v4
         with:
           repository: TheEconomist/ukraine-war-data
           path: ukraine-war-data
           token: ${{ secrets.PAT_TOKEN }}
-
+          fetch-depth: 1                           # only latest commit :contentReference[oaicite:1]{index=1}
+          sparse-checkout: |
+            output-data/tracker/area_assessed_as_controlled_by_russia.csv
+          sparse-checkout-cone-mode: true
+  
       - name: Copy updated CSVs
         run: |
           cp war-fire-model/output-data/strikes_by_location_and_day.csv \
@@ -50,11 +58,8 @@ jobs:
       - name: Cache system libs
         uses: daaku/gh-action-apt-install@v4
         with:
-          packages: |
-            libmagick++-dev libcurl4-openssl-dev libxml2-dev libssl-dev
-            libfontconfig1-dev libfreetype6-dev libpng-dev libicu-dev
-            libblas-dev liblapack-dev libatlas-base-dev r-base-dev build-essential
-          version: 1
+          packages: libmagick++-dev libcurl4-openssl-dev libxml2-dev libssl-dev libfontconfig1-dev libfreetype6-dev libpng-dev libicu-dev libblas-dev liblapack-dev libatlas-base-dev r-base-dev build-essential
+          version: "1"
 
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
@@ -95,5 +100,5 @@ jobs:
         with:
           message: 'Update deaths-and-casualties data & run meta-estimate.R'
           add: |
-            source-data/deaths-and-casualties-data/*.csv
-            output-data/**
+          source-data/deaths-and-casualties-data/*.csv
+          output-data/**
