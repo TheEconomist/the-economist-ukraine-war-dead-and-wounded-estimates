@@ -36,7 +36,64 @@ jobs:
             output-data/strikes_by_location_and_day.csv
           sparse-checkout-cone-mode: true
 
-      # … rest of your steps …
+      - name: Checkout ukraine-war-data
+        uses: actions/checkout@v4
+        with:
+          repository: TheEconomist/ukraine-war-data
+          path: ukraine-war-data
+          token: ${{ secrets.PAT_TOKEN }}
+          fetch-depth: 1   # only latest commit
+          sparse-checkout: |
+            output-data/tracker/area_assessed_as_controlled_by_russia.csv
+          sparse-checkout-cone-mode: true
+
+      - name: Copy updated CSVs
+        run: |
+          cp war-fire-model/output-data/strikes_by_location_and_day.csv \
+             source-data/deaths-and-casualties-data/
+          cp ukraine-war-data/output-data/tracker/area_assessed_as_controlled_by_russia.csv \
+             source-data/deaths-and-casualties-data/
+
+      - name: Cache system libs
+        uses: daaku/gh-action-apt-install@v4
+        with:
+          packages: libmagick++-dev libcurl4-openssl-dev libxml2-dev libssl-dev libfontconfig1-dev libfreetype6-dev libpng-dev libicu-dev libblas-dev liblapack-dev libatlas-base-dev r-base-dev build-essential
+          version: "1"
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.2'
+          use-public-rspm: true
+
+      - name: Install & cache R dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          cache-version: 1
+          extra-packages: |
+            dplyr
+            tidyr
+            readr
+            zoo
+            mgcv
+            scale
+            lubridate
+            ggplot2
+            scales
+            httr
+            ragg
+            rvest
+            googledrive
+            googlesheets4
+
+      - name: Run meta-estimate.R
+        run: |
+          Rscript scripts/meta-estimate.R
+
+      - name: Upload to S3
+        run: |
+          aws s3 sync ./output-data/tracker/ \
+            s3://projects.economist.com-assets/the-economist-ukraine-war-dead-and-wounded-estimates/
 
       - name: Commit and push changes
         uses: EndBug/add-and-commit@v9
