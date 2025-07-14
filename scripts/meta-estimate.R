@@ -162,7 +162,7 @@ covars_cumulative <- covars %>%
 # Ensure we have all dates since the war began:
 war <- tibble(date = seq.Date(from = invasion_start, to = Sys.Date(), by = "day")) %>%
   mutate(days_since_invasion = as.numeric(date - min(date)))
-covars <- covars %>% full_join(war, by = "date") %>% filter(date >= invasion_start)
+covars <- covars %>% full_join(war, by = c("date", 'days_since_invasion')) %>% filter(date >= invasion_start)
 covars_cumulative <- covars_cumulative %>% full_join(war, by = "date") %>% filter(date >= invasion_start)
 
 # Merge in covariates:
@@ -374,7 +374,6 @@ write_csv(raw_data, 'output-data/tracker/raw_estimates.csv')
 combined_data <- rbind(deaths_cumulative, casualties_cumulative) %>%
   filter(!is.na(estimate)) %>%
   select(source, source_type, weight)
-
 
 # Create a table counting the occurrences for each source
 source_count <- combined_data %>%
