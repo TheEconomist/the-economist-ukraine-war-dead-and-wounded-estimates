@@ -4,8 +4,8 @@ on:
   push:
     paths:
       - 'output-data/tracker/meta-estimate-*.csv'
-  schedule:
-    - cron: '30 */6 * * *'  # every day at 01:00 UTC
+ # schedule:
+ #   - cron: '30 */6 * * *'  # every day at 01:00 UTC
   workflow_dispatch:        # ← manual trigger via GitHub UI
 
 
