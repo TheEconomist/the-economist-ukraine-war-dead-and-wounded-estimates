@@ -8,8 +8,8 @@ permissions:
 
 on:
   workflow_dispatch:
-#  schedule:
-#    - cron: '0 */6 * * *'
+  schedule:
+    - cron: '0 */6 * * *'
 
 jobs:
   update-data:
@@ -47,35 +47,40 @@ jobs:
           cp ukraine-war-data/output-data/tracker/area_assessed_as_controlled_by_russia.csv \
              source-data/deaths-and-casualties-data/
 
-      - name: Set up R
+      - name: Cache system libs
+        uses: daaku/gh-action-apt-install@v4
+        with:
+          packages: |
+            libmagick++-dev libcurl4-openssl-dev libxml2-dev libssl-dev
+            libfontconfig1-dev libfreetype6-dev libpng-dev libicu-dev
+            libblas-dev liblapack-dev libatlas-base-dev r-base-dev build-essential
+          version: 1
+
+      - name: Setup R
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: '4.2'
+          use-public-rspm: true
 
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libmagick++-dev libcurl4-openssl-dev libxml2-dev libssl-dev \
-            libfontconfig1-dev libfreetype6-dev libpng-dev libicu-dev \
-            libblas-dev liblapack-dev libatlas-base-dev r-base-dev build-essential
-
-      - name: Cache R packages
-        uses: actions/cache@v3
+      - name: Install & cache R dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-r-4.2-${{ hashFiles('scripts/meta-estimate.R') }}
-          restore-keys: |
-            ${{ runner.os }}-r-4.2-
-
-      - name: Install R package dependencies
-        env:
-          R_LIBS_USER: ${{ env.R_LIBS_USER }}
-        run: |
-          Rscript -e 'install.packages(
-            c("dplyr","tidyr","readr","zoo","mgcv","scale","lubridate","ggplot2","scales",
-              "httr","ragg","rvest","googledrive","googlesheets4"), repos="https://cloud.r-project.org", dependencies=TRUE
-          )'
+          cache-version: 1
+          extra-packages: |
+            dplyr
+            tidyr
+            readr
+            zoo
+            mgcv
+            scale
+            lubridate
+            ggplot2
+            scales
+            httr
+            ragg
+            rvest
+            googledrive
+            googlesheets4
 
       - name: Run meta-estimate.R
         run: |
