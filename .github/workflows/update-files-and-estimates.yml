@@ -1,5 +1,6 @@
 name: Update deaths-and-casualties source data
 
+# Allow read access across org repos and write to this repo
 permissions:
   contents: write
   id-token: write
@@ -18,11 +19,11 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
 
+
     steps:
       - name: Checkout self
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
           persist-credentials: true
 
       - name: Checkout war-fire-model
@@ -31,10 +32,6 @@ jobs:
           repository: TheEconomist/the-economist-war-fire-model
           path: war-fire-model
           token: ${{ secrets.PAT_TOKEN }}
-          fetch-depth: 1   # only latest commit
-          sparse-checkout: |
-            output-data/strikes_by_location_and_day.csv
-          sparse-checkout-cone-mode: true
 
       - name: Checkout ukraine-war-data
         uses: actions/checkout@v4
@@ -42,10 +39,6 @@ jobs:
           repository: TheEconomist/ukraine-war-data
           path: ukraine-war-data
           token: ${{ secrets.PAT_TOKEN }}
-          fetch-depth: 1   # only latest commit
-          sparse-checkout: |
-            output-data/tracker/area_assessed_as_controlled_by_russia.csv
-          sparse-checkout-cone-mode: true
 
       - name: Copy updated CSVs
         run: |
@@ -53,53 +46,39 @@ jobs:
              source-data/deaths-and-casualties-data/
           cp ukraine-war-data/output-data/tracker/area_assessed_as_controlled_by_russia.csv \
              source-data/deaths-and-casualties-data/
-
-      - name: Disable needrestart Apt hook
-        run: |
-          sudo mv /etc/apt/apt.conf.d/99needrestart \
-            /etc/apt/apt.conf.d/99needrestart.disabled || true
-      
-      - name: Cache system libs
-        uses: daaku/gh-action-apt-install@v4
-        with:
-          packages: libmagick++-dev libcurl4-openssl-dev libxml2-dev libssl-dev libfontconfig1-dev libfreetype6-dev libpng-dev libicu-dev libblas-dev liblapack-dev libatlas-base-dev r-base-dev build-essential
-          version: "1"
-
-      - name: Setup R
+      - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: '4.2'
-          use-public-rspm: true
 
-      - name: Install & cache R dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libmagick++-dev libcurl4-openssl-dev libxml2-dev libssl-dev \
+            libfontconfig1-dev libfreetype6-dev libpng-dev libicu-dev \
+            libblas-dev liblapack-dev libatlas-base-dev r-base-dev build-essential
+      - name: Cache R packages
+        uses: actions/cache@v3
         with:
-          cache-version: 1
-          extra-packages: |
-            dplyr
-            tidyr
-            readr
-            zoo
-            mgcv
-            scale
-            lubridate
-            ggplot2
-            scales
-            httr
-            ragg
-            rvest
-            googledrive
-            googlesheets4
-
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-r-4.2-${{ hashFiles('scripts/meta-estimate.R') }}
+          restore-keys: |
+            ${{ runner.os }}-r-4.2-
+      - name: Install R package dependencies
+        env:
+          R_LIBS_USER: ${{ env.R_LIBS_USER }}
+        run: |
+          Rscript -e 'install.packages(
+            c("dplyr","tidyr","readr","zoo","mgcv","scale","lubridate","ggplot2","scales",
+              "httr","ragg","rvest","googledrive","googlesheets4"), repos="https://cloud.r-project.org", dependencies=TRUE
+          )'
       - name: Run meta-estimate.R
         run: |
           Rscript scripts/meta-estimate.R
-
       - name: Upload to S3
         run: |
-          aws s3 sync ./output-data/tracker/ \
-            s3://projects.economist.com-assets/the-economist-ukraine-war-dead-and-wounded-estimates/
-
+          aws s3 sync ./output-data/tracker/ s3://projects.economist.com-assets/the-economist-ukraine-war-dead-and-wounded-estimates/
       - name: Commit and push changes
         uses: EndBug/add-and-commit@v9
         with:
