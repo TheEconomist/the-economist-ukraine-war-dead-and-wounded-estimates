@@ -54,6 +54,11 @@ jobs:
           cp ukraine-war-data/output-data/tracker/area_assessed_as_controlled_by_russia.csv \
              source-data/deaths-and-casualties-data/
 
+      - name: Disable needrestart Apt hook
+        run: |
+          sudo mv /etc/apt/apt.conf.d/99needrestart \
+            /etc/apt/apt.conf.d/99needrestart.disabled || true
+      
       - name: Cache system libs
         uses: daaku/gh-action-apt-install@v4
         with:
