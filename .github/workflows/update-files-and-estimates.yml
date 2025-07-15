@@ -1,4 +1,4 @@
-name: Update deaths-and-casualties source data
+name: Update deaths-and-casualties data
 
 # Allow read access across org repos and write to this repo
 permissions:
