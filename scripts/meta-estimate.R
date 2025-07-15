@@ -133,7 +133,12 @@ deaths_cumulative <- deaths_cumulative %>%
                values_to = 'estimate')
 
 # 4. Load covariates and merge these in ---------------------------------------
+
+# Because the fires data output is based on a probabilistic model it will sometimes change from day to day. Extreme "draws" for early dates can affect the GAM models, and so as to ensure this does not affect our estimates, we use a stable set for most of the war.
+fires_stable <- read_csv('source-data/deaths-and-casualties-data/strikes_by_location_and_day_archive.csv')
 fires   <- read_csv('source-data/deaths-and-casualties-data/strikes_by_location_and_day.csv')
+fires <- rbind(fires_stable, fires[fires$date > max(fires_stable$date), ])
+
 control <- read_csv('source-data/deaths-and-casualties-data/area_assessed_as_controlled_by_russia.csv')
 
 covars <- fires %>% left_join(control) %>% mutate(days_since_invasion = as.numeric(date) - as.numeric(invasion_start)) %>% filter(date >= invasion_start)
