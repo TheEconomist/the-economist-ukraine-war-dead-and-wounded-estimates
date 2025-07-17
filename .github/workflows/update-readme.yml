@@ -3,9 +3,9 @@ name: Sync estimates into README
 on:
   push:
     paths:
-      - 'output-data/tracker/meta-estimate-*.csv'
- # schedule:
- #   - cron: '30 */6 * * *'  # every day at 01:00 UTC
+      - 'output-data/tracker/**'
+  schedule:
+  - cron: '30 */12 * * *'  # every day at 01:00 UTC
   workflow_dispatch:        # ← manual trigger via GitHub UI
 
 
