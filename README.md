@@ -12,7 +12,13 @@ As of **2025-07-18**:
 
 ![Meta-estimate plot](plots/meta-estimate.png)
 
-Our estimate is based on combining public and leaked intelligence estimates of military casualties and deaths in the Russia–Ukraine war with data on war-fire activity and territory shifts. Specifically, we use a GAM (using **mgcv**) with predictors being days since the invasion began, cumulative changes in territory, and tensor products of cloud coverage and war-fire activity (both cumulative--war-fire activity being the sum of daily logged activity, and broken down by area of control). This outputs an estimate, a confidence interval, and a prediction interval for casualties and dead for every day since February 24th of 2022. It currently only predicts dead and casualties for the Russian side, as there are not enough credible estimates of Ukrainian fallen available to produce such meta-estimates.
+Our estimate combines public and leaked intelligence on military casualties in the Russia–Ukraine war with geospatial data on conflict intensity derived from our war-fire system and calculations of shifts in areas of control. We fit a generalized additive model (using R’s mgcv package) with three types of predictors:
+
+* Temporal trend: days since 24 February 2022
+* Changes in territory: cumulative net changes in area controlled by each side
+* War intensity: a tensor-product smooth of cumulative war-fire activity (the sum of daily logged firing events) and cloud cover, both stratified by area of control
+
+From this GAM we derive daily point estimates, 95% confidence intervals and prediction intervals for casualties and fatalities dating back to the start of the invasion. At present we report only Russian losses, as there are too few credible data on Ukrainian fallen to support a robust meta-estimate.
 
 ## Prerequisites
 - **R** ≥ 4.0  
