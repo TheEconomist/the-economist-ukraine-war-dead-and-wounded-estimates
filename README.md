@@ -12,7 +12,7 @@ As of **2025-07-18**:
 
 ![Meta-estimate plot](plots/meta-estimate.png)
 
-A R script aggregates a public and leaked intelligence estimates of military casualties and deaths in the Russia–Ukraine war, fits a GAM (using **mgcv**), and outputs both data and a combined plot of predicted casualties and dead. It currently only predicts dead and casualties for the Russian side, as there are not enough credible public estimates of Ukrainian fallen to produce meta-estimates.
+Our estimate is based on combining public and leaked intelligence estimates of military casualties and deaths in the Russia–Ukraine war with data on war-fire activity and territory shifts. Specifically, we use a GAM (using **mgcv**) with predictors being days since the invasion began, cumulative changes in territory, and tensor products of cloud coverage and war-fire activity (both cumulative--war-fire activity being the sum of daily logged activity, and broken down by area of control). This outputs an estimate, a confidence interval, and a prediction interval for casualties and dead for every day since February 24th of 2022. It currently only predicts dead and casualties for the Russian side, as there are not enough credible estimates of Ukrainian fallen available to produce such meta-estimates.
 
 ## Prerequisites
 - **R** ≥ 4.0  
