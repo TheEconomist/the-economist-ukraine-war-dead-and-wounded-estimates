@@ -86,3 +86,4 @@ jobs:
           add: |
             source-data/deaths-and-casualties-data/*.csv
             output-data/**
+            plots/**
