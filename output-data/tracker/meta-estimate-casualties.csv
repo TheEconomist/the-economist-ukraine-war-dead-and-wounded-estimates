@@ -1,4 +1,5 @@
 date,days_since_invasion,estimate,ci_lower,ci_upper,pi_low,pi_high,type,country
+2025-09-13,1297,NA,NA,NA,NA,NA,casualties,russia
 2025-09-12,1296,NA,NA,NA,NA,NA,casualties,russia
 2025-09-11,1295,NA,NA,NA,NA,NA,casualties,russia
 2025-09-10,1294,NA,NA,NA,NA,NA,casualties,russia
