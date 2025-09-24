@@ -15,6 +15,7 @@ sq_deaths <- read_csv('output-data/tracker/meta-estimate-deaths.csv')
 # 2. Load source data ------------------------------------------------------------
 all <- read_csv('source-data/deaths-and-casualties-data/Soldier deaths_casualties in Ukraine - estimates.csv') %>%
   filter(is.na(`ignore for chart, data from warring parties`)) %>%
+  filter(!is.na(date)) %>%
   mutate(date = as.Date(date, format = '%d/%m/%Y'),
          source = ifelse(source == 'UK Ministry of Defence', 'UK MoD', source)) %>%
   mutate(source = ifelse(source == 'Pentagon leak', 'US DoD', source))
