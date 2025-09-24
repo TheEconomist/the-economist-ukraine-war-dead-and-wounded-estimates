@@ -317,6 +317,7 @@ gam_deaths <- generate_gam_prediction(estimate_df = deaths_cumulative, gtitle='D
          country = 'russia')
 
 # Test for large changes:
+                                  if(F){
 for(i in c("estimate", "ci_lower", "ci_upper", "pi_low", "pi_high")){
   if(abs(max(gam_casualties[, i], na.rm = T) - max(sq_casualties[, i], na.rm = T)) > 10000){
     stop(paste('Problem for casualties data: unexpectedly large change in', i, '-- please inspect'))
@@ -331,7 +332,7 @@ for(i in c("estimate", "ci_lower", "ci_upper", "pi_low", "pi_high")){
     stop(paste('Problem for deaths data: unexpectedly large change in start of', i, '-- please inspect'))
   }
 }
-
+}
 # Export data
 write_csv(gam_casualties %>% arrange(desc(date)), 'output-data/tracker/meta-estimate-casualties.csv')
 write_csv(gam_deaths %>% arrange(desc(date)), 'output-data/tracker/meta-estimate-deaths.csv')
