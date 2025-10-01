@@ -5,8 +5,8 @@
 ## Live estimates
 
 As of **2025-10-01**:
-- Estimated deaths: **191,000** to **458,000** (or, roughly **294,000**)
-- Estimated casualties: **984,000** to **1,416,000** (or, roughly **1,180,000**)
+- Estimated deaths: **191,000** to **460,000** (or, roughly **295,000**)
+- Estimated casualties: **984,000** to **1,418,000** (or, roughly **1,181,000**)
 
 <!-- ESTIMATES-END -->
 
