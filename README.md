@@ -20,6 +20,9 @@ Our estimate combines public and leaked intelligence on military casualties in t
 
 From this GAM we derive daily point estimates, 95% confidence intervals and prediction intervals for casualties and fatalities dating back to the start of the invasion. At present we report only Russian losses, as there are too few credible data on Ukrainian fallen to support a robust meta-estimate.
 
+## Limitations
+We do not have ground-truth data on Russian (or Ukrainian) losses in Ukraine. Instead, we provide an estimate-of-estimates, which should be interpreted with care. Our model infers what the total dead, and dead and wounded, might be if the underlying estimates are correct—but we cannot guarantee that they are. The precise timing of losses should be treated with special care.
+
 ## Prerequisites
 - **R** ≥ 4.0  
 - R packages: `tidyverse`, `lubridate`, `mgcv`, `scales`, `zoo` 
