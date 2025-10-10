@@ -11,7 +11,7 @@ library(scales)
 # And existing estimates (for test):
 sq_casualties <- read_csv('output-data/tracker/meta-estimate-casualties.csv')
 sq_deaths <- read_csv('output-data/tracker/meta-estimate-deaths.csv')
-tests <- T
+tests <- F
 
 # 2. Load source data ------------------------------------------------------------
 all <- read_csv('source-data/deaths-and-casualties-data/Soldier deaths_casualties in Ukraine - estimates.csv') %>%
@@ -63,7 +63,8 @@ deaths_via_meduza$source <- 'Meduza'
 # We add on estimated deaths since:
 deaths_via_meduza_weekly <- read_csv('source-data/deaths-and-casualties-data/meduza_2025_weekly.csv') %>%
   rename(date = Date) %>%
-  filter(date <= as.Date('2024-11-18')) %>% # Removes some estimates marked as affected by reporting lags
+  mutate(date = as.Date(as.character(date), format = '%d/%m/%Y')) %>%
+  filter(date <= as.Date('2025-03-01')) %>% # Removes some estimates marked as affected by reporting lags (last 180 days of data)
   mutate(estimate = ifelse(!is.na(`Estimate based on probate data`),
                            `Estimate based on probate data`, `Flash estimate (by date of discovery)`),
          estimate_low = ifelse(!is.na(ED_low),
