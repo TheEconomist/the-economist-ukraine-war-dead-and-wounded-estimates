@@ -76,9 +76,9 @@ jobs:
       - name: Run meta-estimate.R
         run: |
           Rscript scripts/meta-estimate.R
-      - name: Upload to S3
-        run: |
-          aws s3 sync ./output-data/tracker/ s3://projects.economist.com-assets/the-economist-ukraine-war-dead-and-wounded-estimates/
+   #   - name: Upload to S3
+   #     run: |
+   #       aws s3 sync ./output-data/tracker/ s3://projects.economist.com-assets/the-economist-ukraine-war-dead-and-wounded-estimates/
       - name: Commit and push changes
         uses: EndBug/add-and-commit@v9
         with:
