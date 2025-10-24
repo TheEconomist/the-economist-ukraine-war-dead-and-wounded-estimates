@@ -24,7 +24,7 @@ all$source_id <- paste0('all_df_', all$source, '_', seq_len(nrow(all)))
 
 casualties_via_mod <- read_csv('source-data/deaths-and-casualties-data/Soldier deaths_casualties in Ukraine - uk mod month-by-month estimates.csv') %>%
   mutate(date = as.Date(as.character(`date (at beginning of next month)`), format = '%d/%m/%Y')) %>%
-  filter(date <= as.Date('2025-08-01')) %>%
+  filter(date <= as.Date('2025-11-01')) %>%
   mutate(estimate_low = NA,
          estimate_high = NA,
          estimate = `cumulative casualties`,
