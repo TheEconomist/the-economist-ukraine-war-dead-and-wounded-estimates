@@ -24,7 +24,7 @@ all$source_id <- paste0('all_df_', all$source, '_', seq_len(nrow(all)))
 
 casualties_via_mod <- read_csv('source-data/deaths-and-casualties-data/Soldier deaths_casualties in Ukraine - uk mod month-by-month estimates.csv') %>%
   mutate(date = as.Date(as.character(`date (at beginning of next month)`), format = '%d/%m/%Y')) %>%
-  filter(date <= as.Date('2025-11-01')) %>%
+  filter(date <= as.Date('2026-01-01')) %>%
   mutate(estimate_low = NA,
          estimate_high = NA,
          estimate = `cumulative casualties`,
@@ -105,7 +105,6 @@ deaths_cumulative     <- all %>% filter(type == 'deaths') %>%
 casualties_cumulative <- all %>% filter(type == 'casualties') %>%
   select(-source_url)
 
-
 # Drop only the recoded UK MoD rows here
 casualties_cumulative <- casualties_cumulative %>%
   filter(!source %in% 'UK MoD')
@@ -114,6 +113,7 @@ casualties_cumulative <- casualties_cumulative %>%
 casualties_cumulative <- rbind(casualties_cumulative %>%
                                  select(-type, -`ignore for chart, data from warring parties`),
                                casualties_via_mod[, colnames(casualties_via_mod) %in% colnames(casualties_cumulative)])
+
 # Drop the "Mediazona; Meduza" data already in the main dataset
 deaths_cumulative <- deaths_cumulative %>%
   filter(!source %in% c('Mediazona; Meduza'))
