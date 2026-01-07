@@ -15,9 +15,18 @@ README_PATH   = "README.md"
 deaths = pd.read_csv(DEATHS_CSV, parse_dates=["date"])
 casual = pd.read_csv(CASUAL_CSV, parse_dates=["date"])
 
-# Pick latest rows
-d = deaths.loc[deaths.date.idxmax()]
-c = casual.loc[casual.date.idxmax()]
+def latest_valid(df):
+    max_date = df["date"].max()
+    cutoff = max_date - pd.Timedelta(days=7)
+    df_recent = df[df["date"] >= cutoff]
+    df_valid = df_recent.dropna(subset=["estimate", "pi_low", "pi_high"])
+    if df_valid.empty:
+        raise ValueError("No valid rows found within the last 7 days with estimate/pi bounds.")
+    return df_valid.loc[df_valid.date.idxmax()]
+
+# Pick latest rows with valid values
+d = latest_valid(deaths)
+c = latest_valid(casual)
 
 # Format values
 date_str = d.date.strftime("%Y-%m-%d")
