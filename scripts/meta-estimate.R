@@ -329,6 +329,7 @@ if(tests){
                              filter(date == max(date[!is.na(estimate)])),
                            sq_deaths %>% 
                              filter(date == max(date[!is.na(estimate)]))) %>%
+    select(-type) %>%
     rename(type = date) %>%
     mutate(type = c('casualties new', 'casualties old',
                     'deaths new', 'deaths old'))
@@ -429,4 +430,3 @@ final_table_with_total <- bind_rows(final_table, final_row)
 
 # Write the final table with the total row to CSV
 write_csv(final_table_with_total, "output-data/tracker/meta_estimate_sources_summary.csv")
-
