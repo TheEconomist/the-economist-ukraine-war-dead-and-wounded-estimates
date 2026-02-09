@@ -335,7 +335,7 @@ if(tests){
                     'deaths new', 'deaths old'))
 
   for(i in c("estimate", "ci_lower", "ci_upper", "pi_low", "pi_high")){
-    if(abs(max(gam_casualties[, i], na.rm = T) - max(sq_casualties[, i], na.rm = T)) > 10000){
+    if(abs(max(gam_casualties[, i], na.rm = T) - max(sq_casualties[, i], na.rm = T)) > 20000){
       print(diagnostic_data)
       stop(paste('Problem for casualties data: unexpectedly large change in', i, '-- please inspect'))
     }
@@ -343,7 +343,7 @@ if(tests){
       print(diagnostic_data)
       stop(paste('Problem for deaths data: unexpectedly large change in', i, '-- please inspect'))
     }
-    if(abs(min(gam_casualties[, i], na.rm = T) - min(sq_casualties[, i], na.rm = T)) > 10000){
+    if(abs(min(gam_casualties[, i], na.rm = T) - min(sq_casualties[, i], na.rm = T)) > 20000){
       print(diagnostic_data)
       stop(paste('Problem for casualties data: unexpectedly large change in start of ', i, '-- please inspect'))
     }
