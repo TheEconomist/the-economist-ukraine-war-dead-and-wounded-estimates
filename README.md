@@ -4,9 +4,9 @@
 
 ## Live estimates
 
-As of **2026-03-06**:
-- Estimated deaths: **233,000** to **453,000** (or, roughly **325,000**)
-- Estimated casualties: **1,074,000** to **1,451,000** (or, roughly **1,249,000**)
+As of **2026-03-07**:
+- Estimated deaths: **233,000** to **454,000** (or, roughly **325,000**)
+- Estimated casualties: **1,074,000** to **1,452,000** (or, roughly **1,249,000**)
 
 <!-- ESTIMATES-END -->
 
