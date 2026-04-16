@@ -111,3 +111,4 @@ date,estimate_low,estimate_high,estimate,type,source,source_url,country,"ignore 
 31/12/2025,500000,600000,,casualties,CSIS,https://www.csis.org/analysis/russias-grinding-war-ukraine,ukraine,
 31/12/2025,100000,140000,,deaths,CSIS,https://www.csis.org/analysis/russias-grinding-war-ukraine,ukraine,
 26/01/2026,,,1225000,casualties,UK MoD,https://x.com/DefenceHQ/status/2015730587479278032/photo/1,russia,
+03/04/2026,"319,300","461,200",,deaths,BBC Russia,https://www.bbc.com/russian/articles/cz0e9dj59kro,russia,
