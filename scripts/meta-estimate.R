@@ -24,7 +24,6 @@ all$source_id <- paste0('all_df_', all$source, '_', seq_len(nrow(all)))
 
 casualties_via_mod <- read_csv('source-data/deaths-and-casualties-data/Soldier deaths_casualties in Ukraine - uk mod month-by-month estimates.csv') %>%
   mutate(date = as.Date(as.character(`date (at beginning of next month)`), format = '%d/%m/%Y')) %>%
-  filter(date <= as.Date('2026-01-01')) %>%
   mutate(estimate_low = NA,
          estimate_high = NA,
          estimate = `cumulative casualties`,
@@ -141,8 +140,20 @@ deaths_cumulative <- deaths_cumulative %>%
 fires_stable <- read_csv('source-data/deaths-and-casualties-data/strikes_by_location_and_day_archive.csv')
 fires   <- read_csv('source-data/deaths-and-casualties-data/strikes_by_location_and_day.csv')
 fires <- rbind(fires_stable, fires[fires$date > max(fires_stable$date), ])
+fires_rows_before_dedup <- nrow(fires)
+fires <- fires %>%
+  arrange(date) %>%
+  distinct(date, .keep_all = TRUE)
+fires_rows_deduped <- fires_rows_before_dedup - nrow(fires)
+message("Deduplicated fires rows: ", fires_rows_deduped)
 
 control <- read_csv('source-data/deaths-and-casualties-data/area_assessed_as_controlled_by_russia.csv')
+control_rows_before_dedup <- nrow(control)
+control <- control %>%
+  arrange(date) %>%
+  distinct(date, .keep_all = TRUE)
+control_rows_deduped <- control_rows_before_dedup - nrow(control)
+message("Deduplicated control rows: ", control_rows_deduped)
 
 covars <- fires %>% left_join(control) %>% mutate(days_since_invasion = as.numeric(date) - as.numeric(invasion_start)) %>% filter(date >= invasion_start)
 
@@ -166,6 +177,11 @@ covars_cumulative <- covars %>%
     total_cloud_cover_in_east_of_country_to_date,
     total_change_in_area_assessed_as_russia_controlled,
   )
+covars_cumulative_rows_before_dedup <- nrow(covars_cumulative)
+covars_cumulative <- covars_cumulative %>%
+  distinct(date, .keep_all = TRUE)
+covars_cumulative_rows_deduped <- covars_cumulative_rows_before_dedup - nrow(covars_cumulative)
+message("Deduplicated covars_cumulative rows: ", covars_cumulative_rows_deduped)
 
 # Ensure we have all dates since the war began:
 war <- tibble(date = seq.Date(from = invasion_start, to = Sys.Date(), by = "day")) %>%
