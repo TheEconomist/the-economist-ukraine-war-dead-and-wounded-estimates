@@ -229,9 +229,43 @@ generate_gam_prediction <- function(estimate_df = casualties_cumulative,
     se.fit = TRUE
   )
 
-  # convert link-scale fits to response-scale means
-  predictions <- tibble(date = seq.Date(from = invasion_start, to = Sys.Date(), by = "day")) %>%
-    mutate(days_since_invasion = as.numeric(date - min(date))) %>%
+  expected_dates <- seq.Date(from = invasion_start, to = Sys.Date(), by = "day")
+  pred_dates <- pred_df %>%
+    arrange(date) %>%
+    pull(date)
+
+  if (anyDuplicated(pred_dates) > 0) {
+    stop("pred_df contains duplicated dates.")
+  }
+
+  pred_matches_expected <-
+    length(pred_dates) == length(expected_dates) &&
+    all(pred_dates == expected_dates)
+  pred_missing_latest_only <-
+    length(pred_dates) == length(expected_dates) - 1 &&
+    all(pred_dates == expected_dates[-length(expected_dates)])
+
+  if (!pred_matches_expected && !pred_missing_latest_only) {
+    stop(
+      paste0(
+        "pred_df$date does not match the expected daily grid from invasion_start to Sys.Date(). ",
+        "The only tolerated discrepancy is that pred_df may be missing the most recent date."
+      )
+    )
+  }
+
+  # Build predictions from the actual newdata used in predict(); this avoids
+  # row-count mismatches if the global date grid and pred_df drift out of sync.
+  predictions <- pred_df %>%
+    arrange(date) %>%
+    transmute(
+      date = date,
+      days_since_invasion = if ("days_since_invasion" %in% names(pred_df)) {
+        days_since_invasion
+      } else {
+        as.numeric(date - invasion_start)
+      }
+    ) %>%
     mutate(
       fit_link = casualty_preds$fit,
       se_link  = casualty_preds$se.fit,
