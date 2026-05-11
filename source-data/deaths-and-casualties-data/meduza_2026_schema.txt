@@ -1,0 +1,14 @@
+Year, Week - Date of death by ISO-Year and ISO-Week
+BmzNow - Number of records in named lists, as of today
+ED - Excess deaths, our estimate for KIA
+EDHigh - Excess deaths high estimate, upper limit of the 0.95 CI
+EDLow - Excess deaths low estimate, lower limit of the 0.95 CI
+EDPrediction - Excess deaths predicted by our statistical model; used only for the trailing half-year (2025Q3/Q4) 
+EDPredictionHigh - same, high estimate, upper limit of the 0.95 CI
+EDPredictionLow - same, low estimate, upper limit of the 0.95 CI
+ECSuperlates - Floor estimate for MIA, calculated as a crude excess inheritance cases in probate registry.
+EDSuperlatesFromCoeffs - Central estimate for MIA, calculated based on inheritance cases in probate registry.
+EDSuperlatesCourts - Estimate for MIA based on analysis of court decision, NOT probate registry
+EDAssembled - Our most trusted total: a sum of ED or EDPrediction for KIA with EDSuperlatesFromCoeffs for MIA
+EDAssembledHigh - same, high estimate, upper limit of the 0.95 CI
+EDAssembledLow - same, low estimate, upper limit of the 0.95 CI
