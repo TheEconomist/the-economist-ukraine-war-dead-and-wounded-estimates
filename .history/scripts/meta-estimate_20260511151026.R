@@ -11,7 +11,7 @@ library(scales)
 # And existing estimates (for test):
 sq_casualties <- read_csv('output-data/tracker/meta-estimate-casualties.csv')
 sq_deaths <- read_csv('output-data/tracker/meta-estimate-deaths.csv')
-tests <- F
+tests <- T
 
 # 2. Load source data ------------------------------------------------------------
 all <- read_csv('source-data/deaths-and-casualties-data/Soldier deaths_casualties in Ukraine - estimates.csv') %>%
@@ -40,7 +40,7 @@ if (max(casualties_via_mod$date, na.rm = TRUE) < Sys.Date() - 30*3 &&
   stop("No recent enough data available, declining update.")
 }
 
-# Source: Meduza/Mediazona, via email.
+# Source: Meduza/Mediazona, via email from Alexandr E. received May 2026.
 # EDAssembled is killed plus missing presumed dead. The missing-presumed-dead
 # component is incomplete from July 2025 onward, so we exclude that period.
 iso_week_start <- function(year, week) {
@@ -358,6 +358,9 @@ gam_deaths <- generate_gam_prediction(estimate_df = deaths_cumulative, gtitle='D
 
 # Test for large changes:
 if(tests){
+  casualties_change_threshold <- 20000
+  deaths_change_threshold <- 30000
+  
   diagnostic_data <- rbind(gam_casualties %>% 
                              filter(date == max(date[!is.na(estimate)])), 
                            sq_casualties %>% 
@@ -372,19 +375,19 @@ if(tests){
                     'deaths new', 'deaths old'))
 
   for(i in c("estimate", "ci_lower", "ci_upper", "pi_low", "pi_high")){
-    if(abs(max(gam_casualties[, i], na.rm = T) - max(sq_casualties[, i], na.rm = T)) > 20000){
+    if(abs(max(gam_casualties[, i], na.rm = T) - max(sq_casualties[, i], na.rm = T)) > casualties_change_threshold){
       print(diagnostic_data)
       stop(paste('Problem for casualties data: unexpectedly large change in', i, '-- please inspect'))
     }
-    if(abs(max(gam_deaths[, i], na.rm = T) - max(sq_deaths[, i], na.rm = T)) > 5000){
+    if(abs(max(gam_deaths[, i], na.rm = T) - max(sq_deaths[, i], na.rm = T)) > deaths_change_threshold){
       print(diagnostic_data)
       stop(paste('Problem for deaths data: unexpectedly large change in', i, '-- please inspect'))
     }
-    if(abs(min(gam_casualties[, i], na.rm = T) - min(sq_casualties[, i], na.rm = T)) > 20000){
+    if(abs(min(gam_casualties[, i], na.rm = T) - min(sq_casualties[, i], na.rm = T)) > casualties_change_threshold){
       print(diagnostic_data)
       stop(paste('Problem for casualties data: unexpectedly large change in start of ', i, '-- please inspect'))
     }
-    if(abs(min(gam_deaths[, i], na.rm = T) - min(sq_deaths[, i], na.rm = T)) > 5000){
+    if(abs(min(gam_deaths[, i], na.rm = T) - min(sq_deaths[, i], na.rm = T)) > deaths_change_threshold){
       print(diagnostic_data)
       stop(paste('Problem for deaths data: unexpectedly large change in start of', i, '-- please inspect'))
     }

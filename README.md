@@ -5,7 +5,7 @@
 ## Live estimates
 
 As of **2026-05-11**:
-- Estimated deaths: **289,000** to **526,000** (or, roughly **390,000**)
+- Estimated deaths: **275,000** to **498,000** (or, roughly **365,000**)
 - Estimated casualties: **1,105,000** to **1,525,000** (or, roughly **1,295,000**)
 
 <!-- ESTIMATES-END -->
@@ -38,6 +38,8 @@ source-data/
 ├─ UK\_MoD\_monthly\_estimates.csv
 ├─ meduza\_2024.csv
 ├─ meduza\_2025\_weekly.csv
+├─ meduza\_2026\_weekly.csv
+├─ meduza\_2026\_schema.txt
 ├─ strikes\_by\_location\_and\_day.csv
 └─ area\_assessed\_as\_controlled.csv
 
