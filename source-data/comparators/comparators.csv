@@ -1,0 +1,3 @@
+stat_id,label,value,unit,geography,date,source,notes
+ukraine_area,"Ukraine territory",603550,square_km,Ukraine,,user_supplied_2026_05_12,"Internationally recognised territory; user specified 603,550 km^2."
+russia_men_fighting_age_pre_war,"Russian men aged 18-49, pre-war",31734741,people,Russia,2021,un_world_population_prospects_2024,"Male population aged 18 through 49, summed from one-year age groups in russia_2021_from_un_pop_projections_2024.csv."
