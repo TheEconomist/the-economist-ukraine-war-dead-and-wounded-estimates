@@ -11,7 +11,7 @@ library(scales)
 # And existing estimates (for test):
 sq_casualties <- read_csv('output-data/tracker/meta-estimate-casualties.csv')
 sq_deaths <- read_csv('output-data/tracker/meta-estimate-deaths.csv')
-tests <- T
+tests <- F
 
 # 2. Load source data ------------------------------------------------------------
 all <- read_csv('source-data/deaths-and-casualties-data/Soldier deaths_casualties in Ukraine - estimates.csv') %>%
