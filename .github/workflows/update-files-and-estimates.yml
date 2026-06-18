@@ -32,6 +32,8 @@ jobs:
           repository: TheEconomist/the-economist-war-fire-model
           path: war-fire-model
           token: ${{ secrets.PAT_TOKEN }}
+          sparse-checkout: output-data/strikes_by_location_and_day.csv
+          sparse-checkout-cone-mode: false
 
       - name: Checkout ukraine-war-data
         uses: actions/checkout@v4
@@ -39,6 +41,8 @@ jobs:
           repository: TheEconomist/ukraine-war-data
           path: ukraine-war-data
           token: ${{ secrets.PAT_TOKEN }}
+          sparse-checkout: output-data/tracker/area_assessed_as_controlled_by_russia.csv
+          sparse-checkout-cone-mode: false
 
       - name: Copy updated CSVs
         run: |
