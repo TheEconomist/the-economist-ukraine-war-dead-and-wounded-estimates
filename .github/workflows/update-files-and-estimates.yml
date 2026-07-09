@@ -22,12 +22,12 @@ jobs:
 
     steps:
       - name: Checkout self
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: true
 
       - name: Checkout war-fire-model
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: TheEconomist/the-economist-war-fire-model
           path: war-fire-model
@@ -36,7 +36,7 @@ jobs:
           sparse-checkout-cone-mode: false
 
       - name: Checkout ukraine-war-data
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: TheEconomist/ukraine-war-data
           path: ukraine-war-data
@@ -63,7 +63,7 @@ jobs:
             libfontconfig1-dev libfreetype6-dev libpng-dev libicu-dev \
             libblas-dev liblapack-dev libatlas-base-dev r-base-dev build-essential
       - name: Cache R packages
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ runner.os }}-r-4.2-${{ hashFiles('scripts/meta-estimate.R') }}
@@ -84,7 +84,7 @@ jobs:
    #     run: |
    #       aws s3 sync ./output-data/tracker/ s3://projects.economist.com-assets/the-economist-ukraine-war-dead-and-wounded-estimates/
       - name: Commit and push changes
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@v10
         with:
           message: 'Update deaths-and-casualties data & run meta-estimate.R'
           add: |
