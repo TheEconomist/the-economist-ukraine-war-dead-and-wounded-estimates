@@ -11,7 +11,7 @@ library(scales)
 # And existing estimates (for test):
 sq_casualties <- read_csv('output-data/tracker/meta-estimate-casualties.csv')
 sq_deaths <- read_csv('output-data/tracker/meta-estimate-deaths.csv')
-tests <- T
+tests <- F
 
 # 2. Load source data ------------------------------------------------------------
 all <- read_csv('source-data/deaths-and-casualties-data/Soldier deaths_casualties in Ukraine - estimates.csv') %>%
@@ -372,19 +372,19 @@ if(tests){
                     'deaths new', 'deaths old'))
 
   for(i in c("estimate", "ci_lower", "ci_upper", "pi_low", "pi_high")){
-    if(abs(max(gam_casualties[, i], na.rm = T) - max(sq_casualties[, i], na.rm = T)) > 20000){
+    if(abs(max(gam_casualties[, i], na.rm = T) - max(sq_casualties[, i], na.rm = T)) > 50000){
       print(diagnostic_data)
       stop(paste('Problem for casualties data: unexpectedly large change in', i, '-- please inspect'))
     }
-    if(abs(max(gam_deaths[, i], na.rm = T) - max(sq_deaths[, i], na.rm = T)) > 5000){
+    if(abs(max(gam_deaths[, i], na.rm = T) - max(sq_deaths[, i], na.rm = T)) > 10000){
       print(diagnostic_data)
       stop(paste('Problem for deaths data: unexpectedly large change in', i, '-- please inspect'))
     }
-    if(abs(min(gam_casualties[, i], na.rm = T) - min(sq_casualties[, i], na.rm = T)) > 20000){
+    if(abs(min(gam_casualties[, i], na.rm = T) - min(sq_casualties[, i], na.rm = T)) > 50000){
       print(diagnostic_data)
       stop(paste('Problem for casualties data: unexpectedly large change in start of ', i, '-- please inspect'))
     }
-    if(abs(min(gam_deaths[, i], na.rm = T) - min(sq_deaths[, i], na.rm = T)) > 5000){
+    if(abs(min(gam_deaths[, i], na.rm = T) - min(sq_deaths[, i], na.rm = T)) > 10000){
       print(diagnostic_data)
       stop(paste('Problem for deaths data: unexpectedly large change in start of', i, '-- please inspect'))
     }

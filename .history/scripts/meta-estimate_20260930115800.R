@@ -35,8 +35,8 @@ casualties_via_mod$source_id <- paste0('casualties_via_mod_', seq_len(nrow(casua
 invasion_start <- as.Date('2022-02-24')
 
 # Test for recent data availability. This is coupled with a "date updated" as part of the exports of this script:
-if (max(casualties_via_mod$date, na.rm = TRUE) < Sys.Date() - 30*5 &&
-    max(all$date, na.rm = TRUE)        < Sys.Date() - 30*5) {
+if (max(casualties_via_mod$date, na.rm = TRUE) < Sys.Date() - 30*4 &&
+    max(all$date, na.rm = TRUE)        < Sys.Date() - 30*4) {
   stop("No recent enough data available, declining update.")
 }
 
